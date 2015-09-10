@@ -12,6 +12,7 @@ It uses the rsync --backup and --backup-dir options to do incremental backups. B
 a complete copy of the backed up system is maintained in 'main' and the incrementals
 are in date-time stamped dir names as in
 
+```
 ./backups
 ./backups/cottonwood
 ./backups/cottonwood/2015-08-08_01-00-00
@@ -35,3 +36,4 @@ are in date-time stamped dir names as in
 ./backups/media/main
 
 
+```
