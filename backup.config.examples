@@ -4,46 +4,19 @@
 # Some global vars
 
 # who to email summary to 
-MAILADDR=
+MAILADDR=myemail@address.com
 # account to ssh to for sending email
 MAILSSHER=
 
-# Where all the backups are stored. 
-ARCHIVEROOT=/mnt/backups
-
-# It'll look like this;
-#
-# ./backups
-# ./backups/Volumesplugh
-# ./backups/Volumesplugh/2015-08-08_01-00-00
-# ./backups/Volumesplugh/2015-08-10_01-00-01
-# ./backups/Volumesplugh/2015-08-17_01-00-00
-# ./backups/Volumesplugh/2015-08-23_01-00-00
-# ./backups/Volumesplugh/2015-09-05_01-00-01
-# ./backups/Volumesplugh/2015-09-09_23-22-46
-# ./backups/Volumesplugh/main
-# ./backups/beech
-# ./backups/beech/2015-09-05_01-00-01
-# ./backups/beech/2015-09-06_01-00-01
-# ./backups/beech/2015-09-07_01-00-01
-# ./backups/beech/2015-09-08_01-00-01
-# ./backups/beech/main
-# ./backups/media
-# ./backups/media/2015-02-01_01-00-01
-# ./backups/media/2015-02-02_01-00-02
-# ./backups/media/2015-03-18_01-00-01
-# ./backups/media/2015-04-21_01-00-01
-# ./backups/media/main
-# 
-# where each 'main' is a complete current copy of the backed up file system(s) and each date-time stamped dir
-# is just the incremental mods as created by rsync.
+# Where all the backups are stored. You want to change this from tmp.
+ARCHIVEROOT=/tmp/backups
 
 # main backup dir
 GCURRENT="main"
 CURRENT=$GCURRENT
 
 # rsync options
-#OPTIONS="-n"
+OPTIONS="-n"
 
 # Where to copy complete logfile to
 LOGFILEALLLOC=/mnt/backups/logs
@@ -67,17 +40,17 @@ OSXEXCLUDES=".Spotlight* Users/plugh/Library/Caches /dev** /net /Volumes **/plug
 #
 
 # test or real?
-DOCOMMANDS=1
+DOCOMMANDS=0
 # do the potentially long du?
 DODU=0
 # output to logfile? or stdout
-LOGGING=1
+LOGGING=0
 # send email report?
-SENDEMAIL=1
+SENDEMAIL=0
 # call pre and postbackup?
-DOPREBACKUP=1
+DOPREBACKUP=0
 # prune old backup dirs?
-PRUNEARCHIVES=1
+PRUNEARCHIVES=0
 
 #
 # not using
@@ -121,16 +94,17 @@ NUMBACKUPS="dreamhostvirtuals ps107601 networkredux pecan appleair apple oak box
 # ARCHIVEROOT_test: root dir of backup
 # EXCLUDES_test: rsync exclude patterns
 
-ARCHIVES2KEEP_testx=3
-ARCHIVES2KEEP_testx=$ARCHIVES2KEEP
-BACKUPHOST_testx="pecan.example.org"
-BACKUPUSER_testx="root"
-BACKUPDIRS_testx="/tmp/src"
-#EXCLUDES_testx="/src/backup** /src/dev**"
-ARCHIVEHOST_testx=pecan
-ARCHIVEUSER_testx=root
-ARCHIVEROOT_testx=$ARCHIVEROOT
-ARCHIVEROOTHOST_testx="/mnt/backups/testx"
+#
+# testit
+#
+ICURRENT_testit=$GCURRENT
+BACKUPHOST_testit="localhost"
+BACKUPUNAME_testit="pine"
+BACKUPDIRS_testit="/"
+EXCLUDES_testit=${LINUXEXCLUDES}
+ARCHIVEHOST_testit="localhost"
+ARCHIVEROOT_testit=$ARCHIVEROOT
+ARCHIVES2KEEP_testit=$ARCHIVES2KEEP
 
 #
 # utexas, backup my utexas account

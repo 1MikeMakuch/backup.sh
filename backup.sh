@@ -146,7 +146,7 @@ fi
 
 # check exehost
 echo "isalive $EXEUSERHOST $EXEHOST"
-isaa=`isalive $EXEUSERHOST $EXEHOST`
+isaa=$(isalive $EXEUSERHOST $EXEHOST)
 
 if [[ "$isaa" != 1 ]] ; then
 	echo "BackupError: host apparently not up ssh $BACKUPUSERHOST isalive.sh root@$thishost $thishost"
@@ -164,7 +164,6 @@ isalive() {
 # 2 expected result from uname -a, optional host used otherwise
 # 	On gridserver uname -a returns something completely different than the public hostname
 # 	so I had to come up with a way to specify that.
-
 	isaUserAtHost=$1
 	isaExpectedUname=$2
 
@@ -194,9 +193,9 @@ host=$1
 path=$2
 if ssh $host test -d $path 
 	then
-		echo 0
-	else
 		echo 1
+	else
+		echo 0
 	fi
 }
 
@@ -255,7 +254,9 @@ fi
 
 # check target dir is there
 echo "ssh ${ARCHIVEUSERHOST} remoteDirtest $ARCHIVEROOTHOST/$CURRENT"
-rslt=`ssh ${ARCHIVEUSERHOST} remoteDirtest "$ARCHIVEROOTHOST/$CURRENT"`
+#rslt=`ssh ${ARCHIVEUSERHOST} remoteDirtest "$ARCHIVEROOTHOST/$CURRENT"`
+
+rslt=$(remoteDirtest ${ARCHIVEUSERHOST} "$ARCHIVEROOTHOST/$CURRENT")
 
 if [[ "$rslt" != "1" ]] ; then
 	echo "BackupError: No $ARCHIVEROOTHOST/$CURRENT dir"
@@ -265,7 +266,8 @@ fi
 
 # check backup dir is there
 if [[ "$ARCHIVES2KEEP" -gt 0 ]] ; then
-	rslt=`ssh ${ARCHIVEUSERHOST} remoteDirtest "$ARCHIVEROOTHOST/$INCREMENT"`
+#	rslt=`ssh ${ARCHIVEUSERHOST} remoteDirtest "$ARCHIVEROOTHOST/$INCREMENT"`
+	rslt=$(remoteDirtest ${ARCHIVEUSERHOST} "$ARCHIVEROOTHOST/$INCREMENT")
 	if [[ "$rslt" != "1" ]] ; then
 		echo "BackupError: No $ARCHIVEROOTHOST/$INCREMENT dir"
 		Continue=0
