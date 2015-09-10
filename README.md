@@ -65,8 +65,8 @@ $ sudo ./backup.sh backup.config.examples testit
 ######################################################################
 ######################################################################
 Starting testit root@localhost:/ root@localhost:/tmp/backups/testit Thu Sep 10 16:44:40 CDT 2015
-isalive root@localhost pine
-Up isaa:1 BUH:root@localhost BU:pine
+isalive root@localhost localhost
+Up isaa:1 BUH:root@localhost BU:localhost
 ssh root@localhost /opt/local/libexec/gnubin/df -hP /tmp/backups/testit
 # ssh root@localhost install -d /tmp/backups/testit/main
 # ssh root@localhost install -d /tmp/backups/testit/2015-09-10_16-44-40
@@ -81,5 +81,49 @@ DOCOMMANDS is set to 0 so the install's don't actually create anything, so the b
 fails. Suggest you run it like this as you begin to customize your config file for
 your system(s).
 
+And here's what a successful run looks like on a test dir in /tmp/src
 
+```
+# ./backup.sh backup.config.examples testit
+######################################################################
+######################################################################
+Starting testit root@localhost:/tmp/src root@localhost:/tmp/backups/testit Thu Sep 10 16:59:15 CDT 2015
+isalive root@localhost localhost
+Up isaa:1 BUH:root@localhost BU:localhost
+isalive root@localhost localhost
+Up ssh root@localhost isalive.sh root@localhost localhost
+ssh root@localhost /opt/local/libexec/gnubin/df -hP /tmp/backups/testit
+ssh root@localhost install -d /tmp/backups/testit/main
+ssh root@localhost install -d /tmp/backups/testit/2015-09-10_16-59-15
+ssh root@localhost rm /tmp/backups/testit/lasti
+ssh root@localhost (cd /tmp/backups/testit; ln -s 2015-09-10_16-59-15 lasti)
+ssh root@localhost remoteDirtest /tmp/backups/testit/main
+BACKUPDIRS=/tmp/src
+dir2backup /tmp/src
+######################################################################
+/usr/bin/ssh root@localhost /usr/bin/rsync -av --force --ignore-errors --delete --delete-excluded --backup --backup-dir=/tmp/backups/testit/2015-09-10_16-59-15 --exclude=/backup** --exclude=/dev** --exclude=**.gvfs** --exclude=/media** --exclude=**/plugh/tmp** --exclude=/mnt --exclude=/mnt** --exclude=/net --exclude=/opt --exclude=/proc --exclude=/sys --exclude=/var/named/chroot/proc** --exclude=/var/cache/** /tmp/src /tmp/backups/testit/main
+building file list ... done
+src/
+src/1
+src/2
+src/3
+src/4
+src/5
+
+sent 319 bytes  received 136 bytes  910.00 bytes/sec
+total size is 0  speedup is 0.00
+ssh root@localhost /opt/local/libexec/gnubin/df -hP /tmp/backups/testit
+Nothing in incrementdir so:
+ssh root@localhost rmdir /tmp/backups/testit/2015-09-10_16-59-15
+######################################################################
+ssh root@localhost /opt/local/libexec/gnubin/df -h
+
+######################################################################
+Done root@localhost:/tmp/src root@localhost:/tmp/backups/testit
+Began Thu Sep 10 16:59:15 CDT 2015
+Done  Thu Sep 10 16:59:16 CDT 2015
+```
+
+Note that you'll have to change localhost to your actual hostname in your
+config file. Specifically it must be set to what ever 'uname -a' returns.
 
