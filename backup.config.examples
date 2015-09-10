@@ -16,7 +16,7 @@ GCURRENT="main"
 CURRENT=$GCURRENT
 
 # rsync options
-OPTIONS="-n"
+#OPTIONS="-n"
 
 # Where to copy complete logfile to
 LOGFILEALLLOC=/mnt/backups/logs
@@ -40,7 +40,7 @@ OSXEXCLUDES=".Spotlight* Users/plugh/Library/Caches /dev** /net /Volumes **/plug
 #
 
 # test or real?
-DOCOMMANDS=0
+DOCOMMANDS=1
 # do the potentially long du?
 DODU=0
 # output to logfile? or stdout
@@ -98,9 +98,10 @@ NUMBACKUPS="dreamhostvirtuals ps107601 networkredux pecan appleair apple oak box
 # testit
 #
 ICURRENT_testit=$GCURRENT
+EXEHOST_testit="localhost"
 BACKUPHOST_testit="localhost"
-BACKUPUNAME_testit="pine"
-BACKUPDIRS_testit="/"
+BACKUPUNAME_testit="localhost"
+BACKUPDIRS_testit="/tmp/src"
 EXCLUDES_testit=${LINUXEXCLUDES}
 ARCHIVEHOST_testit="localhost"
 ARCHIVEROOT_testit=$ARCHIVEROOT
