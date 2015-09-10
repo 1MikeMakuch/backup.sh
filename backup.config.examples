@@ -1,0 +1,715 @@
+# config file for backup.sh
+# This is full of examples for illustration purposes, since not everything is commented
+
+# Some global vars
+
+# who to email summary to 
+MAILADDR=
+# account to ssh to for sending email
+MAILSSHER=
+
+# Where all the backups are stored. 
+ARCHIVEROOT=/mnt/backups
+
+# It'll look like this;
+#
+# ./backups
+# ./backups/Volumesplugh
+# ./backups/Volumesplugh/2015-08-08_01-00-00
+# ./backups/Volumesplugh/2015-08-10_01-00-01
+# ./backups/Volumesplugh/2015-08-17_01-00-00
+# ./backups/Volumesplugh/2015-08-23_01-00-00
+# ./backups/Volumesplugh/2015-09-05_01-00-01
+# ./backups/Volumesplugh/2015-09-09_23-22-46
+# ./backups/Volumesplugh/main
+# ./backups/beech
+# ./backups/beech/2015-09-05_01-00-01
+# ./backups/beech/2015-09-06_01-00-01
+# ./backups/beech/2015-09-07_01-00-01
+# ./backups/beech/2015-09-08_01-00-01
+# ./backups/beech/main
+# ./backups/media
+# ./backups/media/2015-02-01_01-00-01
+# ./backups/media/2015-02-02_01-00-02
+# ./backups/media/2015-03-18_01-00-01
+# ./backups/media/2015-04-21_01-00-01
+# ./backups/media/main
+# 
+# where each 'main' is a complete current copy of the backed up file system(s) and each date-time stamped dir
+# is just the incremental mods as created by rsync.
+
+# main backup dir
+GCURRENT="main"
+CURRENT=$GCURRENT
+
+# rsync options
+#OPTIONS="-n"
+
+# Where to copy complete logfile to
+LOGFILEALLLOC=/mnt/backups/logs
+
+# Where to perform long du on
+DUROOTS="/mnt/backups /mnt/ns4300n0/backups"
+
+# highwater. If filesystem use% is gt then backup not done.
+HIGHWATER=95
+
+WINDOWSEXCLUDES="c/SAVE c/Sierra c/cygwin Mozilla**Firefox**Cache **Adobelm_Cleanup** etc/ssh_host* ntuser.dat.LOG2 UsrClass.dat.LOG1 UsrClass.dat.LOG2 **Windows?Defender** **AppData/Local/Temp** Mozilla?Firefox/Profiles**places.sqlite-journal lastalive0.dat lastalive1.dat **/plugh/tmp** "
+
+WINDOWSINCLUDES="c/cygwin/home c/cygwin/etc c/cygwin/var c/cygwin/usr/local"
+
+LINUXEXCLUDES="/backup** /dev** **.gvfs** /media** **/plugh/tmp** /mnt /mnt** /net /opt /proc /sys /var/named/chroot/proc** /var/cache/**"
+
+OSXEXCLUDES=".Spotlight* Users/plugh/Library/Caches /dev** /net /Volumes **/plugh/vids** **/plugh/tmp** /tmp/** /private/**"
+
+# Some booleans for testing/live.
+# These should all be 1 for live runs. Set all or some to 0 for testing.
+#
+
+# test or real?
+DOCOMMANDS=1
+# do the potentially long du?
+DODU=0
+# output to logfile? or stdout
+LOGGING=1
+# send email report?
+SENDEMAIL=1
+# call pre and postbackup?
+DOPREBACKUP=1
+# prune old backup dirs?
+PRUNEARCHIVES=1
+
+#
+# not using
+# DOPOSTBACKUP=0
+# DOPRESTUFF=1
+
+# How many incrementals to keep? Older ones get pruned.
+ARCHIVES2KEEP=45
+
+#
+# backup specific settings. VARNAME_<backupname> 
+# These are evaluated in backup.sh for each named backup in NUMBACKUPS
+#
+# If one of the hosts (backup, archive) is an instance of cygwin 
+# then EXEUSER/HOST may need to be used. Found bug in cygwin/rsync
+# where process hangs if doing rsync from linux box. Doing an ssh u@h rsync
+# gets around the hang.
+#
+
+#
+# NUMBACKUPS: list of backup names to perform, in order.
+# 
+
+#NUMBACKUPS="dreamhost networkredux localbackup pecan apple appleair oak boxwood ns1 ns2 ibm3" NUMBACKUPS="dreamhost networkredux localbackup pecan apple appleair oak boxwood ns1"
+#NUMBACKUPS="dreamhost dreamhostvirtuals networkredux localbackup pecan apple appleair oak boxwood ns1"
+#NUMBACKUPS="dreamhost dreamhostvirtuals zdent networkredux localbackup pecan apple appleair oak boxwood ns1"
+#NUMBACKUPS="dreamhost dreamhostvirtuals dreamhostlogs zdent zdentlogs networkredux localbackup pecan apple appleair oak boxwood ns1"
+#NUMBACKUPS="dreamhostvirtuals ps107601 networkredux localbackup pecan apple appleair oak boxwood ns1 ns2"
+NUMBACKUPS="dreamhostvirtuals ps107601 networkredux pecan appleair apple oak boxwood ns1 ns2"
+
+#
+# Each host or file system(s) to be backed up, 1 set of config vars for each:
+#
+# EXEUSER_test: user passed to ssh
+# EXEHOST_test: host passed to ssh, i.e. ssh user@host ... in docom calls
+# BACKUPUSER_test: rsync user to backup
+# BACKUPHOST_test: rsync host to backup, i.e. rsync user@host:/path dest
+# BACKUPDIRS_test: dirs to backup
+# ARCHIVEUSER_test: rsync user where backup is stored
+# ARCHIVEHOST_test: rsync host where backup is stored, i.e. rsync src user@host:/path
+# ARCHIVEROOT_test: root dir of backup
+# EXCLUDES_test: rsync exclude patterns
+
+ARCHIVES2KEEP_testx=3
+ARCHIVES2KEEP_testx=$ARCHIVES2KEEP
+BACKUPHOST_testx="pecan.example.org"
+BACKUPUSER_testx="root"
+BACKUPDIRS_testx="/tmp/src"
+#EXCLUDES_testx="/src/backup** /src/dev**"
+ARCHIVEHOST_testx=pecan
+ARCHIVEUSER_testx=root
+ARCHIVEROOT_testx=$ARCHIVEROOT
+ARCHIVEROOTHOST_testx="/mnt/backups/testx"
+
+#
+# utexas, backup my utexas account
+#
+ICURRENT_utexas=$GCURRENT
+ARCHIVES2KEEP_utexas=$ARCHIVES2KEEP
+BACKUPUNAME_utexas="xxxkon"
+BACKUPHOST_utexas="xxxkon.cs.utexas.edu"
+BACKUPUSER_utexas="example"
+BACKUPDIRS_utexas="/u/example/"
+ARCHIVEROOT_utexas=$ARCHIVEROOT
+#POSTCOMMAND_utexas="ssh xxxm@pecan.example.org unison xxxexas 2>&1 |tee /tmp/backup.logfile.unison"
+
+#
+# networkredux
+#
+ICURRENT_networkredux=$GCURRENT
+ARCHIVES2KEEP_networkredux=$ARCHIVES2KEEP
+BACKUPUNAME_networkredux="vps"
+BACKUPHOST_networkredux="68.233.4.70"
+BACKUPHOST_networkredux="xxx.example.org"
+BACKUPUSER_networkredux="root"
+BACKUPDIRS_networkredux="/"
+ARCHIVEROOT_networkredux=$ARCHIVEROOT
+EXCLUDES_networkredux="aquota.group aquota.user /dev /media /mnt /proc /sys"
+
+#
+# ps107601
+#
+ICURRENT_ps107601=$GCURRENT
+ARCHIVES2KEEP_ps107601=$ARCHIVES2KEEP
+BACKUPUNAME_ps107601=ps107601
+BACKUPHOST_ps107601="ps107601.dreamhostps.com"
+BACKUPUSER_ps107601="root"
+BACKUPDIRS_ps107601="/"
+ARCHIVEROOT_ps107601=$ARCHIVEROOT
+EXCLUDES_ps107601="/home/koodawg/virtuals /bin /boot /dev /lib /lib32 /lib64 /media /mnt /opt /proc /sbin /selinux /srv /sys"
+#
+# dreamhostvirtuals
+#
+EXEHOST_dreamhostvirtuals=pecan.example.org
+EXEUSER_dreamhostvirtuals=root
+BACKUPHOST_dreamhostvirtuals="ps107601.dreamhostps.com"
+BACKUPUNAME_dreamhostvirtuals=ps107601
+BACKUPUSER_dreamhostvirtuals="root"
+BACKUPDIRS_dreamhostvirtuals="/home/koodawg/virtuals/"
+ARCHIVEHOST_dreamhostvirtuals=pecan.example.org
+ARCHIVEUSER_dreamhostvirtuals=root
+ARCHIVEHARDROOT_dreamhostvirtuals=/var/www
+ARCHIVES2KEEP_dreamhostvirtuals=0
+ICURRENT_dreamhostvirtuals=virtuals
+IOPTIONS_dreamhostvirtuals="-rltdv --force --ignore-errors"
+POPTIONS=''
+if [[ -n "$OPTIONS" ]] ; then
+	POPTIONS="-o $OPTIONS"
+fi
+PRECOMMAND_dreamhostvirtuals="ssh xxxm@pecan.example.org (cd /var/www/virtuals/mike/httpdocs; /u/plugh/scripts/publish -y $POPTIONS)"
+POSTCOMMAND_dreamhostvirtuals="chown -R plugh:apache /var/www/virtuals"
+#
+# dreamhost
+#
+ICURRENT_dreamhost=$GCURRENT
+ARCHIVES2KEEP_dreamhost=$ARCHIVES2KEEP
+BACKUPUNAME_dreamhost=braves
+BACKUPHOST_dreamhost="braves.dreamhost.com"
+BACKUPUSER_dreamhost="koodawg"
+BACKUPDIRS_dreamhost="/home/koodawg"
+ARCHIVEROOT_dreamhost=$ARCHIVEROOT
+EXCLUDES_dreamhost="**koodawg/virtuals** **koodawg/logs**"
+#
+# dreamhostlogs
+#
+ICURRENT_dreamhostlogs=$GCURRENT
+ARCHIVES2KEEP_dreamhostlogs=$ARCHIVES2KEEP
+BACKUPUNAME_dreamhostlogs=braves
+BACKUPHOST_dreamhostlogs="braves.dreamhost.com"
+BACKUPUSER_dreamhostlogs="koodawg"
+BACKUPDIRS_dreamhostlogs="/home/koodawg/logsptr"
+ARCHIVEROOT_dreamhostlogs=$ARCHIVEROOT
+APPEND_OPTIONS_dreamhostlogs="-L"
+ERRORIGNORE_dreamhostlogs="| egrep -v 'send_files.*cache|send_files.*dollahite.*htpasswd'"
+#
+# zdent
+#
+ICURRENT_zdent=$GCURRENT
+IOPTIONS='--rsync-path="nice 19 /usr/bin/rsync"'
+ARCHIVES2KEEP_zdent=$ARCHIVES2KEEP
+BACKUPUNAME_zdent=braves
+BACKUPHOST_zdent="braves.dreamhost.com"
+BACKUPUSER_zdent="zdent"
+BACKUPDIRS_zdent="/home/zdent"
+ARCHIVEROOT_zdent=$ARCHIVEROOT
+EXCLUDES_zdent="**logs**"
+#
+# zdentlogs
+#
+ICURRENT_zdentlogs=$GCURRENT
+ARCHIVES2KEEP_zdentlogs=$ARCHIVES2KEEP
+BACKUPUNAME_zdentlogs=braves
+BACKUPHOST_zdentlogs="braves.dreamhost.com"
+BACKUPUSER_zdentlogs="zdent"
+BACKUPDIRS_zdentlogs="/home/zdent/logsptr"
+ARCHIVEROOT_zdentlogs=$ARCHIVEROOT
+APPEND_OPTIONS_zdentlogs="-L"
+ERRORIGNORE_zdentlogs="| egrep -v 'send_files.*logsptr.*cache'"
+
+#
+# marmak
+#
+ICURRENT_marmak=$GCURRENT
+ARCHIVES2KEEP_marmak=$ARCHIVES2KEEP
+BACKUPUNAME_marmak="braves"
+BACKUPHOST_marmak=braves.dreamhost.com
+BACKUPUSER_marmak="marmak"
+BACKUPDIRS_marmak="/home/marmak"
+ARCHIVEROOT_marmak=$ARCHIVEROOT
+ARCHIVEROOTHOST_marmak="/mnt/backups/marmak"
+EXCLUDES_marmak=marmak/logs
+#
+# creative
+#
+ARCHIVES2KEEP_creative=$ARCHIVES2KEEP
+BACKUPHOST_creative="www.creativephotobooks.com"
+BACKUPUSER_creative="creative"
+BACKUPDIRS_creative="/home/creative"
+ARCHIVEROOT_creative=$ARCHIVEROOT
+PRECOMMAND_creative="ssh creative@www.creativephotobooks.com /usr/bin/mysqldump -A -u creative_master --password=horns2005 > mysqlbackup/data.sql; cp -r /home/creative/access-logs/* weblogs"
+EXCLUDES_creative="**.ftpquota** **_usr_bin_mysqladmin_ping**"
+ICURRENT_creative=$GCURRENT
+
+#
+# media temple creative
+#
+ICURRENT_mtcpb=$GCURRENT
+ARCHIVES2KEEP_mtcpb=$ARCHIVES2KEEP
+BACKUPHOST_mtcpb="s30952.gridserver.com"
+BACKUPUSER_mtcpb="serveradmin@creativephotobooks.com"
+BACKUPDIRS_mtcpb="/home/creativephotobooks.com/"
+BACKUPUNAME_mtcpb="cl01"
+ARCHIVEROOT_mtcpb=$ARCHIVEROOT
+PRECOMMAND_mtcpb="ssh serveradmin@creativephotobooks.com@s30952.gridserver.com /usr/bin/mysqldump -h internal-db.s30952.gridserver.com -A -u db30952_creative --password=creative\!Az123 > mysqlbackup.sql"
+#
+# pecan
+#
+ICURRENT_pecan=$GCURRENT
+IOPTIONS_pecan=
+ARCHIVES2KEEP_pecan=$ARCHIVES2KEEP
+BACKUPHOST_pecan="pecan.example.org"
+BACKUPUSER_pecan="root"
+#BACKUPDIRS_pecan="/ /boot /plugh"
+BACKUPDIRS_pecan="/"
+ARCHIVEROOT_pecan=$ARCHIVEROOT
+EXCLUDES_pecan=${LINUXEXCLUDES}
+#
+# localbackup
+#
+ICURRENT_localbackup=$GCURRENT
+IOPTIONS_localbackup=
+ARCHIVES2KEEP_localbackup=$ARCHIVES2KEEP
+BACKUPHOST_localbackup="pecan.example.org"
+BACKUPUSER_localbackup="root"
+#BACKUPDIRS_localbackup="/ /boot /plugh"
+BACKUPDIRS_localbackup="/"
+ARCHIVEROOT_localbackup=/mnt/localbackup
+ARCHIVEROOTHOST_localbackup="/mnt/localbackup/pecan"
+EXCLUDES_localbackup=${LINUXEXCLUDES}
+#
+# cvsroot to musicpc
+#
+ICURRENT_mbsrc=$GCURRENT
+EXEHOST_mbsrc=musicpc
+EXEUSER_mbsrc=mark
+BACKUPHOST_mbsrc="pecan.example.org"
+BACKUPUSER_mbsrc="root"
+BACKUPDIRS_mbsrc="/home2/cvsroot"
+ARCHIVEUSER_mbsrc=mark
+ARCHIVEHOST_mbsrc="musicpc"
+ARCHIVEROOT_mbsrc="/cygdrive/m/data/MuzikbrowzerSrcBackupCvsRoot"
+ARCHIVES2KEEP_mbsrc=$ARCHIVES2KEEP
+
+#
+# mail
+#
+ICURRENT_mail=$GCURRENT
+BACKUPHOST_mail="mail.example.org"
+BACKUPDIRS_mail="/"
+EXCLUDES_mail=${LINUXEXCLUDES}
+ARCHIVEHOST_mail="pecan"
+ARCHIVEROOT_mail=$ARCHIVEROOT
+ARCHIVES2KEEP_mail=$ARCHIVES2KEEP
+#
+# cotton
+#
+ICURRENT_cotton=$GCURRENT
+IOPTIONS_cotton=
+BACKUPHOST_cotton="cotton.example.org"
+BACKUPDIRS_cotton="/"
+EXCLUDES_cotton=${LINUXEXCLUDES}
+ARCHIVEHOST_cotton="pecan"
+ARCHIVEROOT_cotton=$ARCHIVEROOT
+ARCHIVES2KEEP_cotton=$ARCHIVES2KEEP
+#
+# apple
+#
+ICURRENT_apple=$GCURRENT
+IOPTIONS_apple=
+ARCHIVES2KEEP_apple=$ARCHIVES2KEEP
+BACKUPHOST_apple="apple.example.org"
+BACKUPUSER_apple="root"
+BACKUPDIRS_apple="/"
+ARCHIVEROOT_apple=$ARCHIVEROOT
+EXCLUDES_apple=$OSXEXCLUDES
+ERRORIGNORE_apple="| grep -v 'receiving file list ... rsync: readdir../home..: Input.output error .5.'"
+#POSTCOMMAND_apple="ssh plugh@pecan.example.org unison apple 2>&1 |tee /tmp/backup.logfile.unison"
+#
+# applepro
+#
+ICURRENT_applepro=$GCURRENT
+IOPTIONS_applepro=
+ARCHIVES2KEEP_applepro=$ARCHIVES2KEEP
+BACKUPHOST_applepro="applepro.example.org"
+BACKUPUSER_applepro="root"
+BACKUPDIRS_applepro="/"
+ARCHIVEROOT_applepro=$ARCHIVEROOT
+EXCLUDES_applepro=$OSXEXCLUDES
+
+#
+# appleair
+#
+ICURRENT_appleair=$GCURRENT
+IOPTIONS_appleair=
+ARCHIVES2KEEP_appleair=$ARCHIVES2KEEP
+BACKUPHOST_appleair="appleair.example.org"
+BACKUPUSER_appleair="root"
+BACKUPDIRS_appleair="/"
+ARCHIVEROOT_appleair=$ARCHIVEROOT
+EXCLUDES_appleair=$OSXEXCLUDES
+#POSTCOMMAND_appleair="ssh plugh@pecan.example.org unison appleair 2>&1 |tee /tmp/backup.logfile.unison"
+
+#
+# music
+#
+ICURRENT_music=$GCURRENT
+ARCHIVES2KEEP_music=$ARCHIVES2KEEP
+#BACKUPDIRS_music="/music"
+BACKUPDIRS_music="/"
+ARCHIVEROOT_music=$ARCHIVEROOT
+ARCHIVEROOTHOST_music="/mnt/backups/music"
+
+BACKUP_RSYNCD_HOST_music=ns4300n1
+BACKUP_RSYNCD_USER_music=promise
+#BACKUP_RSYNCD_ROOT_music="/VOLUME1/plugh"
+BACKUP_RSYNCD_ROOT_music="/VOLUME1/MUSIC"
+ARCHIVE_RSYNCD_PW_music="/plugh/root/backup/rsyncd.ns4300n0.password"
+BACKUP_RSYNCD_MODULE_music="192.168.2.4"
+#
+# video
+#
+ICURRENT_video=$GCURRENT
+ARCHIVES2KEEP_video=$ARCHIVES2KEEP
+#BACKUPDIRS_video="/video"
+BACKUPDIRS_video="/"
+ARCHIVEROOT_video=$ARCHIVEROOT
+ARCHIVEROOTHOST_video="/mnt/backups/video"
+
+BACKUP_RSYNCD_HOST_video=ns4300n1
+BACKUP_RSYNCD_USER_video=promise
+#BACKUP_RSYNCD_ROOT_video="/VOLUME1/plugh"
+BACKUP_RSYNCD_ROOT_video="/VOLUME1/VIDEO"
+ARCHIVE_RSYNCD_PW_video="/plugh/root/backup/rsyncd.ns4300n0.password"
+BACKUP_RSYNCD_MODULE_video="192.168.2.4"
+
+#
+# ibm3
+#
+ICURRENT_ibm3=$GCURRENT
+BACKUPHOST_ibm3="ibm3.example.org"
+BACKUPDIRS_ibm3="/"
+EXCLUDES_ibm3=${LINUXEXCLUDES}
+ARCHIVEROOT_ibm3=$ARCHIVEROOT
+ARCHIVES2KEEP_ibm3=$ARCHIVES2KEEP
+#
+# r1
+#
+ICURRENT_r1=$GCURRENT
+BACKUPHOST_r1="r1.example.org"
+BACKUPDIRS_r1="/"
+EXCLUDES_r1=${LINUXEXCLUDES}
+ARCHIVEROOT_r1=$ARCHIVEROOT
+ARCHIVES2KEEP_r1=$ARCHIVES2KEEP
+#
+# r2
+#
+ICURRENT_r2=$GCURRENT
+BACKUPHOST_r2="r2.example.org"
+BACKUPDIRS_r2="/"
+EXCLUDES_r2=${LINUXEXCLUDES}
+ARCHIVEROOT_r2=$ARCHIVEROOT
+ARCHIVES2KEEP_r2=$ARCHIVES2KEEP
+#
+# ns1
+#
+ICURRENT_ns1=$GCURRENT
+BACKUPHOST_ns1="ns1.example.org"
+BACKUPDIRS_ns1="/"
+EXCLUDES_ns1=${LINUXEXCLUDES}
+ARCHIVEROOT_ns1=$ARCHIVEROOT
+ARCHIVES2KEEP_ns1=$ARCHIVES2KEEP
+#
+# ns2
+#
+ICURRENT_ns2=$GCURRENT
+BACKUPHOST_ns2="ns2.example.org"
+BACKUPDIRS_ns2="/"
+EXCLUDES_ns2=${LINUXEXCLUDES}
+ARCHIVEROOT_ns2=$ARCHIVEROOT
+ARCHIVES2KEEP_ns2=$ARCHIVES2KEEP
+#
+# eeepc
+#
+ICURRENT_eeepc=$GCURRENT
+BACKUPHOST_eeepc="eeepc.example.org"
+BACKUPDIRS_eeepc="/"
+EXCLUDES_eeepc=${LINUXEXCLUDES}
+ARCHIVEHOST_eeepc="pecan"
+ARCHIVEROOT_eeepc=$ARCHIVEROOT
+ARCHIVES2KEEP_eeepc=$ARCHIVES2KEEP
+
+
+#
+# mesquite
+#
+ICURRENT_mesquite=$GCURRENT
+EXEHOST_mesquite=mesquite
+EXEUSER_mesquite=plugh
+BACKUPHOST_mesquite="mesquite.example.org"
+BACKUPUSER_mesquite="plugh"
+BACKUPDIRS_mesquite="/cygdrive/c"
+ARCHIVEHOST_mesquite="pecan.example.org"
+ARCHIVEUSER_mesquite=root
+ARCHIVEROOT_mesquite=$ARCHIVEROOT
+ARCHIVES2KEEP_mesquite=$ARCHIVES2KEEP
+#PRECOMMAND_mesquite="scp plugh@mesquite:/cygdrive/c/plugh/firefox/bookmarks.html plugh@mike.example.org:/var/www/virtuals/httpdocs";
+
+#
+# yaupon
+#
+ICURRENT_yaupon=$GCURRENT
+EXEHOST_yaupon=yaupon
+EXEUSER_yaupon=plugh
+BACKUPHOST_yaupon="yaupon.example.org"
+BACKUPUSER_yaupon="plugh"
+BACKUPDIRS_yaupon="/cygdrive/c"
+ARCHIVEHOST_yaupon="pecan.example.org"
+ARCHIVEUSER_yaupon="root"
+ARCHIVEROOT_yaupon=$ARCHIVEROOT
+ARCHIVES2KEEP_yaupon=$ARCHIVES2KEEP
+#PRECOMMAND_yaupon="scp plugh@yaupon:/cygdrive/c/plugh/firefox/bookmarks.html plugh@mike.example.org:/var/www/virtuals/httpdocs";
+EXCLUDES_yaupon=${WINDOWSEXCLUDES}
+EXCLUDESFILE_yaupon=/cygdrive/c/plugh/backup/ExcludesVista
+INCLUDES_yaupon=${WINDOWSINCLUDES}
+
+#
+# birch
+#
+ICURRENT_birch=$GCURRENT
+EXEHOST_birch=birch
+EXEUSER_birch=plugh
+BACKUPHOST_birch="birch.example.org"
+BACKUPUSER_birch="plugh"
+BACKUPDIRS_birch="/cygdrive/c"
+ARCHIVEHOST_birch="pecan.example.org"
+ARCHIVEUSER_birch="root"
+ARCHIVEROOT_birch=$ARCHIVEROOT
+ARCHIVES2KEEP_birch=$ARCHIVES2KEEP
+EXCLUDES_birch=${WINDOWSEXCLUDES}
+EXCLUDES_birch="${EXCLUDES_birch} **plugh/ISOs**"
+EXCLUDESFILE_birch=/cygdrive/c/plugh/backup/ExcludesXP
+INCLUDES_birch=${WINDOWSINCLUDES}
+#
+# boxwood
+#
+ICURRENT_boxwood=$GCURRENT
+IOPTIONS_boxwood=
+EXEHOST_boxwood=boxwood.example.org
+EXEUSER_boxwood=plugh
+BACKUPHOST_boxwood="boxwood.example.org"
+BACKUPUSER_boxwood="plugh"
+BACKUPDIRS_boxwood="/cygdrive/c/plugh"
+ARCHIVEHOST_boxwood="pecan.example.org"
+ARCHIVEUSER_boxwood="root"
+ARCHIVEROOT_boxwood=$ARCHIVEROOT
+ARCHIVES2KEEP_boxwood=$ARCHIVES2KEEP
+EXCLUDES_boxwood=${WINDOWSEXCLUDES}
+EXCLUDESFILE_boxwood=/cygdrive/c/plugh/backup/ExcludesXP
+INCLUDES_boxwood=${WINDOWSINCLUDES}
+#
+# oak
+#
+ICURRENT_oak=$GCURRENT
+APPEND_OPTIONS_oak="--omit-dir-times --no-owner --no-group"
+EXEHOST_oak=oak.example.org
+EXEUSER_oak=plugh
+BACKUPHOST_oak="oak.example.org"
+BACKUPUSER_oak="plugh"
+BACKUPDIRS_oak="/cygdrive/c"
+ARCHIVEHOST_oak="pecan.example.org"
+ARCHIVEUSER_oak="root"
+ARCHIVEROOT_oak=$ARCHIVEROOT
+ARCHIVES2KEEP_oak=$ARCHIVES2KEEP
+EXCLUDES_oak=${WINDOWSEXCLUDES}
+EXCLUDESFILE_oak=/cygdrive/c/plugh/backup/ExcludesVista
+INCLUDES_oak=${WINDOWSINCLUDES}
+ERRORIGNORE_oak="| grep -v 'rsync: send_files failed to open.*Device or resource busy'"
+#POSTCOMMAND_oak="ssh plugh@pecan.example.org unison oak 2>&1 |tee /tmp/backup.logfile.unison"
+
+#
+# yauponatgc
+#
+ICURRENT_yauponatgc=$GCURRENT
+BACKUPHOST_yauponatgc="yauponatgc.example.org"
+BACKUPUSER_yauponatgc="plugh"
+BACKUPDIRS_yauponatgc="/cygdrive/c"
+BACKUPDIRS_yauponatgc=":backuptmp"
+ARCHIVEHOST_yauponatgc="pecan"
+ARCHIVEUSER_yauponatgc="root"
+ARCHIVEROOT_yauponatgc=$ARCHIVEROOT
+ARCHIVES2KEEP_yauponatgc=$ARCHIVES2KEEP
+HOSTOPTIONS_yauponatgc="--rsh=ssh"
+PRECOMMAND_yauponatgc="ssh plugh@yauponatgc rsync --daemon --config=/cygdrive/c/plugh/rsyncd.conf"
+POSTCOMMAND_yauponatgc="ssh plugh@yauponatgc pkill rsync"
+
+#
+# plum
+#
+ICURRENT_plum=$GCURRENT
+EXEHOST_plum=plum
+EXEUSER_plum=mark
+BACKUPHOST_plum="plum.example.org"
+BACKUPUSER_plum="mark"
+BACKUPDIRS_plum="/cygdrive/c/tmp"
+BACKUPDIRS_plum="/cygdrive/c /cygdrive/d"
+ARCHIVEUSER_plum="root"
+ARCHIVEHOST_plum="pecan.example.org"
+ARCHIVEROOT_plum=$ARCHIVEROOT
+ARCHIVES2KEEP_plum=180
+EXCLUDES_plum="${WINDOWSEXCLUDES} d/backups d/System**"
+EXCLUDESFILE_plum=/home/mark/backup/ExcludesXP
+INCLUDES_plum=${WINDOWSINCLUDES}
+
+#
+# musicpc
+#
+ICURRENT_musicpc=$GCURRENT
+EXEHOST_musicpc=musicpc
+EXEUSER_musicpc=mark
+BACKUPHOST_musicpc="musicpc.example.org"
+BACKUPUSER_musicpc="mark"
+BACKUPDIRS_musicpc="/cygdrive/m"
+ARCHIVEUSER_musicpc="root"
+ARCHIVEHOST_musicpc="pecan.example.org"
+ARCHIVEROOT_musicpc=$ARCHIVEROOT
+ARCHIVES2KEEP_musicpc=$ARCHIVES2KEEP
+EXCLUDES_musicpc=${WINDOWSEXCLUDES}
+EXCLUDESFILE_musicpc=/home/mark/backup/ExcludesXP
+INCLUDES_musicpc=${WINDOWSINCLUDES}
+#
+# cvsroot to musicpc
+#
+ICURRENT_mbsrc=$GCURRENT
+EXEHOST_mbsrc=musicpc
+EXEUSER_mbsrc=mark
+BACKUPHOST_mbsrc="pecan.example.org"
+BACKUPUSER_mbsrc="root"
+BACKUPDIRS_mbsrc="/home2/cvsroot"
+ARCHIVEUSER_mbsrc=mark
+ARCHIVEHOST_mbsrc="musicpc"
+ARCHIVEROOT_mbsrc="/cygdrive/m/data/MuzikbrowzerSrcBackupCvsRoot"
+ARCHIVES2KEEP_mbsrc=$ARCHIVES2KEEP
+
+# do any prebackup stuff here, hard coded for local system
+
+prebackup() {
+	mountcheck
+	mc=$?
+	if [[ "$mc" != 0 ]] ; then
+		return $mc
+	fi
+
+	return 0
+	
+}
+remount0() {
+	echo "remount0"
+	umount /mnt/backups  >/dev/null 2>&1
+	mount -t ext3 /dev/md0 /mnt/backups  >/dev/null 2>&1
+}
+remount1() {
+	echo "remount1"
+	umount /mnt/ns4300n0  >/dev/null 2>&1
+	mount -t nfs -o intr ns4300n0:/VOLUME1/BACKUP /mnt/ns4300n0
+}
+mountcheck() {
+#	/usr/sbin/lsof /dev/md0
+
+mountcheck0
+if [[ "$?" != 0 ]] ; then
+	remount0
+	mountcheck0
+	if [[ "$?" != 0 ]] ; then
+		return 1
+	fi
+fi
+
+return 0
+
+}
+mountcheck0() {
+	cd /mnt/backups
+	/usr/local/scripts/mydf .|grep "/dev/md0.*/mnt/backups"  > /dev/null 2>&1
+	if [[ "$?" == 1 ]] ; then
+		cd /root
+		return 1
+	fi
+
+	cd /root
+	s0=`date` 
+	echo $s0 > /mnt/backups/testexample  2>/dev/null
+	echo $s0 > /tmp/testexample  2>/dev/null
+	cmp -s /mnt/backups/testexample /tmp/testexample  >/dev/null 2>&1
+	mc=$?
+	rm -f /mnt/backups/testexample /tmp/testexample >/dev/null 2&>1
+	if [[ "$mc" != 0 ]] ; then
+		return $mc
+	fi
+}
+mountcheck1() {
+
+	cd /mnt/ns4300n0
+	/usr/local/scripts/mydf .|grep "ns4300n0.*/mnt/ns4300n0"   >/dev/null 2>&1
+	s=$?
+	if [[ "$s" == 1 ]] ; then
+		cd /root
+		return 1
+	fi
+	nfsstat=`/usr/sbin/nfsstat -m|grep /mnt/ns4300n0`
+	if [[ "$nfsstat" == "" ]] ; then
+		cd /root
+		echo "nas not mounted"
+		return 1
+	fi
+
+	cd /root
+	s0=`date` 
+	echo $s0 > /mnt/ns4300n0/testexample  2>/dev/null
+	echo $s0 > /tmp/testexample  2>/dev/null
+	cmp -s /mnt/ns4300n0/testexample /tmp/testexample  >/dev/null 2>&1
+	mc=$?
+	rm -f /mnt/ns4300n0/testexample /tmp/testexample >/dev/null 2&>1
+
+	return $mc
+}
+
+# do any postbackup stuff here
+postbackup() {
+	echo hello
+
+#	/usr/sbin/lsof /dev/md0 >/dev/null 2>&1
+#	umount /mnt/backups  >/dev/null 2>&1
+#	mount -t ext3 -r /dev/md0 /mnt/backups >/dev/null 2>&1
+#	umount /mnt/ns4300n0
+#	mount -t nfs -r -o intr ns4300n0:/VOLUME1/BACKUP /mnt/ns4300n0
+
+	rsync -uav /mnt/md0/logs/ ash:/mnt/md0/backups/logs
+}
+
+localdf() {
+	echo pecan 
+	df -hP
+	echo;echo ash
+	ssh ash df -hP
+}
